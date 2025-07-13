@@ -1,0 +1,84 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Set Your Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #121212;
+      color: white;
+      padding: 20px;
+    }
+    .avatar-selection {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .avatar-selection img {
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      transition: border 0.3s;
+    }
+    .avatar-selection img.selected {
+      border: 3px solid #00ffcc;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 200px;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #00ffcc;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Choose Your Avatar and Username</h1>
+  <input type="text" id="usernameInput" placeholder="Enter your username" />
+
+  <div class="avatar-selection">
+    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=A" onclick="selectAvatar(this)">
+    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=B" onclick="selectAvatar(this)">
+    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=C" onclick="selectAvatar(this)">
+  </div>
+
+  <button onclick="saveProfile()">Enter Arcade</button>
+
+  <script>
+    let selectedAvatarSrc = "";
+
+    function selectAvatar(img) {
+      document.querySelectorAll(".avatar-selection img").forEach(el => el.classList.remove("selected"));
+      img.classList.add("selected");
+      selectedAvatarSrc = img.src;
+    }
+
+    function saveProfile() {
+      const username = document.getElementById("usernameInput").value.trim();
+      if (!username || !selectedAvatarSrc) {
+        alert("Please enter a username and select an avatar.");
+        return;
+      }
+      localStorage.setItem("arcadeUsername", username);
+      localStorage.setItem("arcadeAvatar", selectedAvatarSrc);
+      window.location.href = "index.html"; // Redirect to arcade home
+    }
+  </script>
+</body>
+</html>

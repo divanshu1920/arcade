@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Virtual Arcade</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    #welcomeUser {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    #welcomeUser img {
+      border-radius: 50%;
+    }
+    .profile-actions {
+      display: none; /* Hidden by default */
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    .profile-actions button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #00ffcc;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎮 My Virtual Arcade</h1>
+    <div id="welcomeUser"></div>
+    <div class="profile-actions">
+      <button onclick="changeProfile()">Change Profile</button>
+      <button onclick="logout()">Log Out</button>
+    </div>
+    <p>Choose a game and start playing!</p>
+  </header>
+
+  <main>
+    <div class="game-list">
+      <a href="games/space-shooter.html" class="game-card">🚀 Space Shooter</a>
+      <a href="games/memory-match.html" class="game-card">🧠 Memory Match</a>
+      <a href="games/brick-breaker.html" class="game-card">🧱 Brick Breaker</a>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 My Arcade. All rights reserved.</p>
+  </footer>
+
+  <script>
+    window.onload = function () {
+      const username = localStorage.getItem("arcadeUsername");
+      const avatar = localStorage.getItem("arcadeAvatar");
+
+      if (!username || !avatar) {
+        window.location.href = "profile.html";
+      } else {
+        document.getElementById("welcomeUser").innerHTML = `
+          <h2>Welcome, ${username}!</h2>
+          <img src="${avatar}" alt="Avatar" width="80" />
+        `;
+        document.querySelector(".profile-actions").style.display = "flex";
+      }
+    };
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "profile.html";
+    }
+
+    function changeProfile() {
+      window.location.href = "profile.html";
+    }
+  </script>
+</body>
+</html>

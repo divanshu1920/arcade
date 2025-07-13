@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Memory Match Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #fefaf3;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 36px;
+      color: #333;
+    }
+
+    .scoreboard {
+      font-size: 18px;
+      margin: 10px 0 20px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      gap: 15px;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .card {
+      width: 100px;
+      height: 100px;
+      background-color: #ffdde1;
+      border: 2px solid #f5c6cb;
+      font-size: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .card.flipped {
+      background-color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .popup {
+      position: fixed;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -35%);
+      background: white;
+      border: 2px solid #888;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Memory Match</h1>
+  <div class="scoreboard">
+    Time: <span id="timer">0</span>s | Best: <span id="bestTime">--</span>s
+  </div>
+
+  <div id="gameBoard" class="board"></div>
+
+  <div id="popup" class="popup">
+    <h2>🎉 You Win!</h2>
+    <p>Your Time: <span id="finalTime"></span>s</p>
+    <p>Best Time: <span id="finalBestTime"></span>s</p>
+    <button onclick="restartGame()">Play Again</button>
+  </div>
+
+  <script>
+    const board = document.getElementById("gameBoard");
+    const timerEl = document.getElementById("timer");
+    const bestEl = document.getElementById("bestTime");
+    const popup = document.getElementById("popup");
+    const finalTimeEl = document.getElementById("finalTime");
+    const finalBestTimeEl = document.getElementById("finalBestTime");
+
+    const emojis = ["🍓", "🌸", "🧸", "🍭", "🌼", "💎", "🌈", "🎈"];
+    let deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let matchedPairs = 0;
+    let timer = 0;
+    let gameStarted = false;
+    let timerInterval;
+    let bestTime = localStorage.getItem("memoryBest");
+
+    if (bestTime) bestEl.textContent = bestTime;
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timer++;
+        timerEl.textContent = timer;
+      }, 1000);
+    }
+
+    function createBoard() {
+      board.innerHTML = '';
+      deck.forEach((symbol, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.symbol = symbol;
+        card.dataset.index = index;
+        card.textContent = "";
+        card.addEventListener("click", flipCard);
+        board.appendChild(card);
+      });
+    }
+
+    function flipCard() {
+      if (lockBoard || this.classList.contains("flipped")) return;
+
+      if (!gameStarted) {
+        gameStarted = true;
+        startTimer();
+      }
+
+      this.classList.add("flipped");
+      this.textContent = this.dataset.symbol;
+
+      if (!firstCard) {
+        firstCard = this;
+        return;
+      }
+
+      secondCard = this;
+      lockBoard = true;
+
+      if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+        matchedPairs++;
+        resetCards();
+        if (matchedPairs === emojis.length) finishGame();
+      } else {
+        setTimeout(() => {
+          firstCard.classList.remove("flipped");
+          secondCard.classList.remove("flipped");
+          firstCard.textContent = "";
+          secondCard.textContent = "";
+          resetCards();
+        }, 1000);
+      }
+    }
+
+    function resetCards() {
+      [firstCard, secondCard] = [null, null];
+      lockBoard = false;
+    }
+
+    function finishGame() {
+      clearInterval(timerInterval);
+      popup.style.display = "block";
+      finalTimeEl.textContent = timer;
+
+      if (!bestTime || timer < bestTime) {
+        bestTime = timer;
+        localStorage.setItem("memoryBest", bestTime);
+      }
+
+      finalBestTimeEl.textContent = localStorage.getItem("memoryBest");
+    }
+
+    function restartGame() {
+      window.location.reload();
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
+
